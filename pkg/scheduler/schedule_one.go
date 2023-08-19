@@ -64,6 +64,7 @@ const (
 )
 
 // scheduleOne does the entire scheduling workflow for a single pod. It is serialized on the scheduling algorithm's host fitting.
+// 为单个pod执行完整的调度工作流
 func (sched *Scheduler) scheduleOne(ctx context.Context) {
 	logger := klog.FromContext(ctx)
 	podInfo, err := sched.NextPod()
@@ -432,6 +433,7 @@ func (sched *Scheduler) schedulePod(ctx context.Context, fwk framework.Framework
 
 // Filters the nodes to find the ones that fit the pod based on the framework
 // filter plugins and filter extenders.
+// 根据过滤插件和过滤扩展， 过滤节点， 找到一个适合当前pod的节点
 func (sched *Scheduler) findNodesThatFitPod(ctx context.Context, fwk framework.Framework, state *framework.CycleState, pod *v1.Pod) ([]*v1.Node, framework.Diagnosis, error) {
 	logger := klog.FromContext(ctx)
 	diagnosis := framework.Diagnosis{
@@ -490,6 +492,7 @@ func (sched *Scheduler) findNodesThatFitPod(ctx context.Context, fwk framework.F
 			nodes = append(nodes, nInfo)
 		}
 	}
+	// 根据过滤插件过滤可用节点
 	feasibleNodes, err := sched.findNodesThatPassFilters(ctx, fwk, state, pod, diagnosis, nodes)
 	// always try to update the sched.nextStartNodeIndex regardless of whether an error has occurred
 	// this is helpful to make sure that all the nodes have a chance to be searched
@@ -498,7 +501,7 @@ func (sched *Scheduler) findNodesThatFitPod(ctx context.Context, fwk framework.F
 	if err != nil {
 		return nil, diagnosis, err
 	}
-
+	// 根据扩展器， 过滤可用节点
 	feasibleNodes, err = findNodesThatPassExtenders(ctx, sched.Extenders, pod, feasibleNodes, diagnosis.NodeToStatusMap)
 	if err != nil {
 		return nil, diagnosis, err

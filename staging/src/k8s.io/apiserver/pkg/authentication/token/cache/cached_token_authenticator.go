@@ -202,7 +202,8 @@ func (a *cachedTokenAuthenticator) doAuthenticateToken(ctx context.Context, toke
 		// since this is shared work between multiple requests, we have no way of knowing if any
 		// particular request supports audit annotations.  thus we always attempt to record them.
 		ac.Event.Level = auditinternal.LevelMetadata
-
+		// 本地记录不存在， 请求远程webhook服务器， 验证token
+		// vendor/k8s.io/apiserver/plugin/pkg/authenticator/token/webhook/webhook.go实现AuthenticateToken函数
 		record.resp, record.ok, record.err = a.authenticator.AuthenticateToken(ctx, token)
 		record.annotations = ac.Event.Annotations
 		record.warnings = recorder.extractWarnings()
