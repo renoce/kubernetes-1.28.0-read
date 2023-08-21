@@ -105,13 +105,13 @@ const (
 // Its members are sorted roughly in order of importance for composers.
 type Config struct {
 	// SecureServing is required to serve https
-	SecureServing *SecureServingInfo
+	SecureServing *SecureServingInfo // 用于配置https配置
 
 	// Authentication is the configuration for authentication
-	Authentication AuthenticationInfo
+	Authentication AuthenticationInfo // 是用于认证的配置
 
 	// Authorization is the configuration for authorization
-	Authorization AuthorizationInfo
+	Authorization AuthorizationInfo // 是用于授权的配置
 
 	// LoopbackClientConfig is a config for a privileged loopback connection to the API server
 	// This is required for proper functioning of the PostStartHooks on a GenericAPIServer
@@ -205,7 +205,7 @@ type Config struct {
 
 	// If specified, all requests except those which match the LongRunningFunc predicate will timeout
 	// after this duration.
-	RequestTimeout time.Duration
+	RequestTimeout time.Duration // 请求超时时间
 	// If specified, long running requests such as watch will be allocated a random timeout between this value, and
 	// twice this value.  Note that it is up to the request handlers to ignore or honor this timeout. In seconds.
 	MinRequestTimeout int
@@ -226,9 +226,11 @@ type Config struct {
 	JSONPatchMaxCopyBytes int64
 	// The limit on the request size that would be accepted and decoded in a write request
 	// 0 means no limit.
+	// 最大请求body
 	MaxRequestBodyBytes int64
 	// MaxRequestsInFlight is the maximum number of parallel non-long-running requests. Every further
 	// request has to wait. Applies only to non-mutating requests.
+	// 最大非长时间运行的并行请求数量
 	MaxRequestsInFlight int
 	// MaxMutatingRequestsInFlight is the maximum number of parallel mutating requests. Every further
 	// request has to wait.

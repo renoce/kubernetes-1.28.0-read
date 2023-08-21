@@ -108,6 +108,7 @@ var AllOrderedPlugins = []string{
 
 // RegisterAllAdmissionPlugins registers all admission plugins.
 // The order of registration is irrelevant, see AllOrderedPlugins for execution order.
+// 注册所有的准入器插件, 还有一个注册点在vendor/k8s.io/apiserver/pkg/server/plugins.go
 func RegisterAllAdmissionPlugins(plugins *admission.Plugins) {
 	admit.Register(plugins) // DEPRECATED as no real meaning
 	alwayspullimages.Register(plugins)

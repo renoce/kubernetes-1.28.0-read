@@ -96,6 +96,8 @@ type Config struct {
 
 // New returns an authenticator.Request or an error that supports the standard
 // Kubernetes authentication mechanisms.
+// 实例化认证器调用链， 根据认证的配置信息（由flags命令行参数传入）决定是否启用认证方法，
+// 并对启用的认证方法生成对应的HTTP Handler函数，最后通过union函数将已启用的认证器合并到authenticators数组对象
 func (config Config) New() (authenticator.Request, *spec.SecurityDefinitions, error) {
 	var authenticators []authenticator.Request
 	var tokenAuthenticators []authenticator.Token
@@ -213,7 +215,7 @@ func (config Config) New() (authenticator.Request, *spec.SecurityDefinitions, er
 		}
 		return nil, &securityDefinitions, nil
 	}
-
+	// 将authenticators合并成一个authenticator认证器
 	authenticator := union.New(authenticators...)
 
 	authenticator = group.NewAuthenticatedGroupAdder(authenticator)

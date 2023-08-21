@@ -70,7 +70,7 @@ func NewConfig(opts options.CompletedOptions) (*Config, error) {
 	c := &Config{
 		Options: opts,
 	}
-
+	// 创建 genericConfig
 	controlPlane, serviceResolver, pluginInitializer, err := CreateKubeAPIServerConfig(opts)
 	if err != nil {
 		return nil, err

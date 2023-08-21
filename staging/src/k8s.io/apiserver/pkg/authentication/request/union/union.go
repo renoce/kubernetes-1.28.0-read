@@ -33,6 +33,8 @@ type unionAuthRequestHandler struct {
 
 // New returns a request authenticator that validates credentials using a chain of authenticator.Request objects.
 // The entire chain is tried until one succeeds. If all fail, an aggregate error is returned.
+// 将认证器列表存放在union结构的Handlers []authenticator.Request对象中。当客户端请求到达kube-apiserver时，kube-apiserver会遍历认证器
+// 列表，尝试执行每个认证器，当有一个认证器返回true时，则认证成功。
 func New(authRequestHandlers ...authenticator.Request) authenticator.Request {
 	if len(authRequestHandlers) == 1 {
 		return authRequestHandlers[0]

@@ -66,6 +66,7 @@ func BuildGenericConfig(
 
 	lastErr error,
 ) {
+	// 构建genericConfig
 	genericConfig = genericapiserver.NewConfig(legacyscheme.Codecs)
 	genericConfig.MergedResourceConfig = controlplane.DefaultAPIResourceConfigSource()
 
@@ -93,6 +94,7 @@ func BuildGenericConfig(
 	// wrap the definitions to revert any changes from disabled features
 	getOpenAPIDefinitions = openapi.GetOpenAPIDefinitionsWithoutDisabledFeatures(getOpenAPIDefinitions)
 	namer := openapinamer.NewDefinitionNamer(schemes...)
+	// 构建openAPI/Swagger配置
 	genericConfig.OpenAPIConfig = genericapiserver.DefaultOpenAPIConfig(getOpenAPIDefinitions, namer)
 	genericConfig.OpenAPIConfig.Info.Title = "Kubernetes"
 	genericConfig.OpenAPIV3Config = genericapiserver.DefaultOpenAPIV3Config(getOpenAPIDefinitions, namer)
@@ -114,7 +116,7 @@ func BuildGenericConfig(
 	} else {
 		s.Etcd.StorageConfig.Transport.TracerProvider = oteltrace.NewNoopTracerProvider()
 	}
-
+	// 构建StorageFactory存储（Etcd）配置
 	storageFactoryConfig := kubeapiserver.NewStorageFactoryConfig()
 	storageFactoryConfig.APIResourceConfig = genericConfig.MergedResourceConfig
 	storageFactory, lastErr = storageFactoryConfig.Complete(s.Etcd).New()
@@ -143,10 +145,11 @@ func BuildGenericConfig(
 	versionedInformers = clientgoinformers.NewSharedInformerFactory(clientgoExternalClient, 10*time.Minute)
 
 	// Authentication.ApplyTo requires already applied OpenAPIConfig and EgressSelector if present
+	// 构建Authentication认证配置
 	if lastErr = s.Authentication.ApplyTo(&genericConfig.Authentication, genericConfig.SecureServing, genericConfig.EgressSelector, genericConfig.OpenAPIConfig, genericConfig.OpenAPIV3Config, clientgoExternalClient, versionedInformers); lastErr != nil {
 		return
 	}
-
+	// 构建Authorization授权配置
 	genericConfig.Authorization.Authorizer, genericConfig.RuleResolver, err = BuildAuthorizer(s, genericConfig.EgressSelector, versionedInformers)
 	if err != nil {
 		lastErr = fmt.Errorf("invalid authorization config: %v", err)
@@ -183,7 +186,7 @@ func BuildAuthorizer(s controlplaneapiserver.CompletedOptions, EgressSelector *e
 		}
 		authorizationConfig.CustomDial = egressDialer
 	}
-
+	// 实例化授权器， 构建授权器链
 	return authorizationConfig.New()
 }
 

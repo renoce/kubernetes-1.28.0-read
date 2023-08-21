@@ -70,11 +70,14 @@ type Config struct {
 
 // New returns the right sort of union of multiple authorizer.Authorizer objects
 // based on the authorizationMode or an error.
+// 当客户端请求到达kube-apiserver时，kube-apiserver会遍历授权器列表，并按照顺序执行授权器，排在前面的授权器具有更高的优
+// 先级（允许或拒绝请求）。客户端发起一个请求，在经过授权阶段时，只要有一个授权器通过，则授权成功。
 func (config Config) New() (authorizer.Authorizer, authorizer.RuleResolver, error) {
 	if len(config.AuthorizationModes) == 0 {
 		return nil, nil, fmt.Errorf("at least one authorization mode must be passed")
 	}
-
+	// authorizers中存放 已启用的授权器列表
+	// ruleResolvers存放 已启用的授权器规则解析器
 	var (
 		authorizers   []authorizer.Authorizer
 		ruleResolvers []authorizer.RuleResolver
@@ -148,6 +151,6 @@ func (config Config) New() (authorizer.Authorizer, authorizer.RuleResolver, erro
 			return nil, nil, fmt.Errorf("unknown authorization mode %s specified", authorizationMode)
 		}
 	}
-
+	// 构建授权器链
 	return union.New(authorizers...), union.NewRuleResolvers(ruleResolvers...), nil
 }
