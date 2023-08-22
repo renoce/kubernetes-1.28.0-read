@@ -271,22 +271,24 @@ func (o *Options) Config(ctx context.Context) (*schedulerappconfig.Config, error
 			return nil, fmt.Errorf("error creating self-signed certificates: %v", err)
 		}
 	}
-
+	// 构建 schedule Config， 将所有schedule配置到Config
 	c := &schedulerappconfig.Config{}
 	if err := o.ApplyTo(logger, c); err != nil {
 		return nil, err
 	}
 
 	// Prepare kube clients.
+	// 创建http client
 	client, eventClient, err := createClients(c.KubeConfig)
 	if err != nil {
 		return nil, err
 	}
-
+	// 创建事件广播
 	c.EventBroadcaster = events.NewEventBroadcasterAdapter(eventClient)
 
 	// Set up leader election if enabled.
 	var leaderElectionConfig *leaderelection.LeaderElectionConfig
+	// 初始化leader选举配置
 	if c.ComponentConfig.LeaderElection.LeaderElect {
 		// Use the scheduler name in the first profile to record leader election.
 		schedulerName := corev1.DefaultSchedulerName
@@ -299,7 +301,7 @@ func (o *Options) Config(ctx context.Context) (*schedulerappconfig.Config, error
 			return nil, err
 		}
 	}
-
+	// 初始化InformerFactory
 	c.Client = client
 	c.InformerFactory = scheduler.NewInformerFactory(client, 0)
 	dynClient := dynamic.NewForConfigOrDie(c.KubeConfig)

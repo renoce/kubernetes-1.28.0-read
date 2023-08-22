@@ -332,7 +332,7 @@ func Setup(ctx context.Context, opts *options.Options, outOfTreeRegistryOptions 
 	if errs := opts.Validate(); len(errs) > 0 {
 		return nil, nil, utilerrors.NewAggregate(errs)
 	}
-
+	// 初始化 Schedule Config
 	c, err := opts.Config(ctx)
 	if err != nil {
 		return nil, nil, err

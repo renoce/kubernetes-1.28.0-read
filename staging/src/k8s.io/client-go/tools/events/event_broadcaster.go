@@ -400,6 +400,7 @@ func NewEventBroadcasterAdapter(client clientset.Interface) EventBroadcasterAdap
 }
 
 // StartRecordingToSink starts sending events received from the specified eventBroadcaster to the given sink.
+// 发送从指定evnetBroadcaster接收到的事件到给定的接收者
 func (e *eventBroadcasterAdapterImpl) StartRecordingToSink(stopCh <-chan struct{}) {
 	if e.eventsv1Broadcaster != nil && e.eventsv1Client != nil {
 		e.eventsv1Broadcaster.StartRecordingToSink(stopCh)

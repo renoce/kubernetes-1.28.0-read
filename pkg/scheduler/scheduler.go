@@ -272,8 +272,9 @@ func New(ctx context.Context,
 		}
 		options.profiles = cfg.Profiles
 	}
-
+	// 初始化插件注册表， 决定了schedule的功能， 其中包括绑定PodInformer， NodeInformer等Informer
 	registry := frameworkplugins.NewInTreeRegistry()
+	// 添加自定义注册表
 	if err := registry.Merge(options.frameworkOutOfTreeRegistry); err != nil {
 		return nil, err
 	}
@@ -316,7 +317,7 @@ func New(ctx context.Context,
 		preEnqueuePluginMap[profileName] = profile.PreEnqueuePlugins()
 		queueingHintsPerProfile[profileName] = buildQueueingHintMap(profile.EnqueueExtensions())
 	}
-
+	// 初始化一个优先级调度队列
 	podQueue := internalqueue.NewSchedulingQueue(
 		profiles[options.profiles[0].SchedulerName].QueueSortFunc(),
 		informerFactory,
@@ -353,7 +354,7 @@ func New(ctx context.Context,
 	}
 	sched.NextPod = podQueue.Pop
 	sched.applyDefaultHandlers()
-
+	// 为所有Informer对象添加对资源事件的监控
 	if err = addAllEventHandlers(sched, informerFactory, dynInformerFactory, unionedGVKs(queueingHintsPerProfile)); err != nil {
 		return nil, fmt.Errorf("adding event handlers: %w", err)
 	}

@@ -45,6 +45,8 @@ import (
 // NewInTreeRegistry builds the registry with all the in-tree plugins.
 // A scheduler that runs out of tree plugins can register additional plugins
 // through the WithFrameworkOutOfTreeRegistry option.
+// 插件注册表， 插件涉及调度器中的各个方面，包括动态资源分配、节点选择器扩散、镜像本地性、亲和性和污点容忍度、节点名称和端口分配等等。
+// Features对象，根据默认启用的特性来判断是否启用某些插件功能
 func NewInTreeRegistry() runtime.Registry {
 	fts := plfeature.Features{
 		EnableDynamicResourceAllocation:              feature.DefaultFeatureGate.Enabled(features.DynamicResourceAllocation),
