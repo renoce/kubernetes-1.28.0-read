@@ -754,7 +754,7 @@ func (s *GenericAPIServer) installAPIResources(apiPrefix string, apiGroupInfo *A
 		}
 		apiGroupVersion.TypeConverter = typeConverter
 		apiGroupVersion.MaxRequestBodyBytes = s.maxRequestBodyBytes
-
+		// 注册 rest handle， 将restful webservice注册到restful container
 		discoveryAPIResources, r, err := apiGroupVersion.InstallREST(s.Handler.GoRestfulContainer)
 
 		if err != nil {
@@ -853,8 +853,9 @@ func (s *GenericAPIServer) InstallAPIGroups(apiGroupInfos ...*APIGroupInfo) erro
 	if err != nil {
 		return fmt.Errorf("unable to get openapi models: %v", err)
 	}
-
+	// 构建api接口以及handler
 	for _, apiGroupInfo := range apiGroupInfos {
+		// 构建api接口
 		if err := s.installAPIResources(APIGroupPrefix, apiGroupInfo, openAPIModels); err != nil {
 			return fmt.Errorf("unable to install api resources: %v", err)
 		}
