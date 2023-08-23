@@ -409,7 +409,7 @@ func (c completedConfig) New(delegationTarget genericapiserver.DelegationTarget)
 		routes.NewOpenIDMetadataServer(md.ConfigJSON, md.PublicKeysetJSON).
 			Install(s.Handler.GoRestfulContainer)
 	}
-
+	// 构建Master实例
 	m := &Instance{
 		GenericAPIServer:          s,
 		ClusterAuthenticationInfo: c.ExtraConfig.ClusterAuthenticationInfo,
@@ -731,6 +731,8 @@ func (m *Instance) InstallAPIs(apiResourceConfigSource serverstorage.APIResource
 
 		if len(groupName) == 0 {
 			// the legacy group for core APIs is special that it is installed into /api via this special install method.
+			// InstallLegacyAPI函数将没有组名的资源组注册到/api前缀的路径下
+			// 其表现形式为/api/<version>/<resource>， 例如http://localhost：8080/api/v1/pods。
 			if err := m.GenericAPIServer.InstallLegacyAPIGroup(genericapiserver.DefaultLegacyAPIPrefix, &apiGroupInfo); err != nil {
 				return fmt.Errorf("error in registering legacy API: %w", err)
 			}
@@ -739,7 +741,8 @@ func (m *Instance) InstallAPIs(apiResourceConfigSource serverstorage.APIResource
 			nonLegacy = append(nonLegacy, &apiGroupInfo)
 		}
 	}
-
+	// 将拥有组名的资源组注册到 /apis 前 缀 的 路 径 下 ， 其 表 现 形 式
+	// 为/apis/<group>/<version>/<resource>，例如http://localhost：8080/apis/apps/v1/deployments。
 	if err := m.GenericAPIServer.InstallAPIGroups(nonLegacy...); err != nil {
 		return fmt.Errorf("error in registering group versions: %v", err)
 	}
