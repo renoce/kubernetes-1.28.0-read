@@ -731,7 +731,7 @@ func (m *Instance) InstallAPIs(apiResourceConfigSource serverstorage.APIResource
 			}
 			m.GenericAPIServer.AddPostStartHookOrDie(name, hook)
 		}
-
+		// groupName = ""的是legacy api
 		if len(groupName) == 0 {
 			// the legacy group for core APIs is special that it is installed into /api via this special install method.
 			// InstallLegacyAPI函数将没有组名的资源组注册到/api前缀的路径下
