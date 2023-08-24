@@ -147,6 +147,7 @@ func New(c Config) (*legacyProvider, error) {
 	return p, nil
 }
 
+// 组装legacy apiGroupInfo
 func (c *legacyProvider) NewRESTStorage(apiResourceConfigSource serverstorage.APIResourceConfigSource, restOptionsGetter generic.RESTOptionsGetter) (genericapiserver.APIGroupInfo, error) {
 	apiGroupInfo, err := c.GenericConfig.NewRESTStorage(apiResourceConfigSource, restOptionsGetter)
 	if err != nil {
@@ -222,7 +223,7 @@ func (c *legacyProvider) NewRESTStorage(apiResourceConfigSource serverstorage.AP
 			return genericapiserver.APIGroupInfo{}, err
 		}
 	}
-
+	// 构建各种资源的VersionedResourcesStorageMap
 	if resource := "pods"; apiResourceConfigSource.ResourceEnabled(corev1.SchemeGroupVersion.WithResource(resource)) {
 		storage[resource] = podStorage.Pod
 		storage[resource+"/attach"] = podStorage.Attach

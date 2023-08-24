@@ -422,7 +422,7 @@ func (c completedConfig) New(delegationTarget genericapiserver.DelegationTarget)
 
 	// TODO: update to a version that caches success but will recheck on failure, unlike memcache discovery
 	discoveryClientForAdmissionRegistration := clientset.Discovery()
-
+	// 构建 legacyRESTStorageProvider， groupName = ""
 	legacyRESTStorageProvider, err := corerest.New(corerest.Config{
 		GenericConfig: corerest.GenericConfig{
 			StorageFactory:              c.ExtraConfig.StorageFactory,
@@ -456,6 +456,7 @@ func (c completedConfig) New(delegationTarget genericapiserver.DelegationTarget)
 	// with specific priorities.
 	// TODO: describe the priority all the way down in the RESTStorageProviders and plumb it back through the various discovery
 	// handlers that we have.
+	// 将legacyRESTStorageProvider和其他非legacyRESTStorageProvider统一放到slice中， 在InstallAPIs统一处理
 	restStorageProviders := []RESTStorageProvider{
 		legacyRESTStorageProvider,
 		apiserverinternalrest.StorageProvider{},
@@ -688,6 +689,7 @@ type RESTStorageProvider interface {
 }
 
 // InstallAPIs will install the APIs for the restStorageProviders if they are enabled.
+// 统一处理所有RestStorageProvider，  legacyRestStorageProvider和非legacyRestStorageProvider
 func (m *Instance) InstallAPIs(apiResourceConfigSource serverstorage.APIResourceConfigSource, restOptionsGetter generic.RESTOptionsGetter, restStorageProviders ...RESTStorageProvider) error {
 	nonLegacy := []*genericapiserver.APIGroupInfo{}
 
@@ -699,6 +701,7 @@ func (m *Instance) InstallAPIs(apiResourceConfigSource serverstorage.APIResource
 
 	for _, restStorageBuilder := range restStorageProviders {
 		groupName := restStorageBuilder.GroupName()
+		// 构建每一种资源的apiGroupInfo
 		apiGroupInfo, err := restStorageBuilder.NewRESTStorage(apiResourceConfigSource, restOptionsGetter)
 		if err != nil {
 			return fmt.Errorf("problem initializing API group %q : %v", groupName, err)
