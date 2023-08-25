@@ -46,18 +46,22 @@ import (
 type Scheme struct {
 	// gvkToType allows one to figure out the go type of an object with
 	// the given version and name.
+	// 存储gvk和type的映射关系
 	gvkToType map[schema.GroupVersionKind]reflect.Type
 
 	// typeToGVK allows one to find metadata for a given go object.
 	// The reflect.Type we index by should *not* be a pointer.
+	// 存储Type与GVK的映射关系，一个Type会对应一个或多个GVK
 	typeToGVK map[reflect.Type][]schema.GroupVersionKind
 
 	// unversionedTypes are transformed without conversion in ConvertToVersion.
+	// 存储UnversionedType与GVK的映射关系
 	unversionedTypes map[reflect.Type]schema.GroupVersionKind
 
 	// unversionedKinds are the names of kinds that can be created in the context of any group
 	// or version
 	// TODO: resolve the status of unversioned types.
+	// 存 储 Kind （ 资 源 种 类 ） 名 称 与UnversionedType的映射关系
 	unversionedKinds map[string]reflect.Type
 
 	// Map from version and resource to the corresponding func to convert

@@ -494,6 +494,7 @@ func (c completedConfig) New(delegationTarget genericapiserver.DelegationTarget)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get listener address: %w", err)
 	}
+	// 构建kubernetes Service Controller
 	kubernetesServiceCtrl := kubernetesservice.New(kubernetesservice.Config{
 		PublicIP: c.GenericConfig.PublicAddress,
 
