@@ -50,6 +50,8 @@ import (
 )
 
 // DeploymentStorage includes dummy storage for Deployments and for Scale subresource.
+// 所有资源都实现了rest.storage接口(vendor/k8s.io/apiserver/pkg/registry/rest/rest.go)
+// StatusREST数据结构用于实现deployment/status子资源的RESTStorage
 type DeploymentStorage struct {
 	Deployment *REST
 	Status     *StatusREST

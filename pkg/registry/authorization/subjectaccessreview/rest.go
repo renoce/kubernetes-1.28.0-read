@@ -30,6 +30,7 @@ import (
 	authorizationutil "k8s.io/kubernetes/pkg/registry/authorization/util"
 )
 
+// 实现了rest.Storage(vendor/k8s.io/apiserver/pkg/registry/rest/rest.go)
 type REST struct {
 	authorizer authorizer.Authorizer
 }

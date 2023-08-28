@@ -94,6 +94,8 @@ type GenericStore interface {
 // specific to the API.
 //
 // TODO: make the default exposed methods exactly match a generic RESTStorage
+// 实现了storage.Interface通用存储接口（vendor/k8s.io/apiserver/pkg/storage/interfaces.go）
+// 实现对Etcd集群的读/写操作
 type Store struct {
 	// NewFunc returns a new instance of the type this registry returns for a
 	// GET of a single object, e.g.:
