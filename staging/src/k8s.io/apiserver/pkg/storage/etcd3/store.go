@@ -72,6 +72,8 @@ func (d authenticatedDataString) AuthenticatedData() []byte {
 
 var _ value.Context = authenticatedDataString("")
 
+// UnderlyingStorage ：底层存储对象，真正与Etcd集群交互的资源存储对象
+// 实现了storage.Interface通用存储接口（vendor/k8s.io/apiserver/pkg/storage/interfaces.go）
 type store struct {
 	client              *clientv3.Client
 	codec               runtime.Codec

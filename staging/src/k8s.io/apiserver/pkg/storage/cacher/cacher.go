@@ -247,6 +247,9 @@ type indexedTriggerFunc struct {
 // based on the underlying storage contents.
 // Cacher implements storage.Interface (although most of the calls are just
 // delegated to the underlying storage).
+// CacherStorage ：带有缓存功能的资源存储对象
+// 其storage字段实现了storage.Interface通用存储接口（vendor/k8s.io/apiserver/pkg/storage/interfaces.go）
+// storage实现结构体在（vendor/k8s.io/apiserver/pkg/storage/etcd3/store.go） type store struct{}
 type Cacher struct {
 	// HighWaterMarks for performance debugging.
 	// Important: Since HighWaterMark is using sync/atomic, it has to be at the top of the struct due to a bug on 32-bit platforms

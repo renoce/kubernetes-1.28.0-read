@@ -94,7 +94,7 @@ type GenericStore interface {
 // specific to the API.
 //
 // TODO: make the default exposed methods exactly match a generic RESTStorage
-// 实现了storage.Interface通用存储接口（vendor/k8s.io/apiserver/pkg/storage/interfaces.go）
+// 其Storage字段实现了storage.Interface通用存储接口（vendor/k8s.io/apiserver/pkg/storage/interfaces.go）
 // 实现对Etcd集群的读/写操作
 type Store struct {
 	// NewFunc returns a new instance of the type this registry returns for a
@@ -169,6 +169,7 @@ type Store struct {
 	Decorator func(runtime.Object)
 
 	// CreateStrategy implements resource-specific behavior during creation.
+	// 创建资源前的预处理操作
 	CreateStrategy rest.RESTCreateStrategy
 	// BeginCreate is an optional hook that returns a "transaction-like"
 	// commit/revert function which will be called at the end of the operation,
@@ -178,9 +179,11 @@ type Store struct {
 	BeginCreate BeginCreateFunc
 	// AfterCreate implements a further operation to run after a resource is
 	// created and before it is decorated, optional.
+	// 创建资源对象后的处理
 	AfterCreate AfterCreateFunc
 
 	// UpdateStrategy implements resource-specific behavior during updates.
+	// 更新资源前预处理操作
 	UpdateStrategy rest.RESTUpdateStrategy
 	// BeginUpdate is an optional hook that returns a "transaction-like"
 	// commit/revert function which will be called at the end of the operation,
@@ -190,12 +193,15 @@ type Store struct {
 	BeginUpdate BeginUpdateFunc
 	// AfterUpdate implements a further operation to run after a resource is
 	// updated and before it is decorated, optional.
+	// 更新资源后的处理
 	AfterUpdate AfterUpdateFunc
 
 	// DeleteStrategy implements resource-specific behavior during deletion.
+	// 删除资源前预处理操作
 	DeleteStrategy rest.RESTDeleteStrategy
 	// AfterDelete implements a further operation to run after a resource is
 	// deleted and before it is decorated, optional.
+	// 删除资源后处理
 	AfterDelete AfterDeleteFunc
 	// ReturnDeletedObject determines whether the Store returns the object
 	// that was deleted. Otherwise, return a generic success status response.

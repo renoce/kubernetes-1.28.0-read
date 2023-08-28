@@ -17,7 +17,7 @@ limitations under the License.
 package apiserver
 
 import (
-	"k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
+	v1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	apiextensionsapiserver "k8s.io/apiextensions-apiserver/pkg/apiserver"
 	apiextensionsoptions "k8s.io/apiextensions-apiserver/pkg/cmd/server/options"
@@ -58,6 +58,7 @@ func CreateAPIExtensionsConfig(
 	// prefer the more compact serialization (v1beta1) for storage until https://issue.k8s.io/82292 is resolved for objects whose v1 serialization is too big but whose v1beta1 serialization can be stored
 	etcdOptions.StorageConfig.EncodeVersioner = runtime.NewMultiGroupVersioner(v1beta1.SchemeGroupVersion, schema.GroupKind{Group: v1beta1.GroupName})
 	etcdOptions.SkipHealthEndpoints = true // avoid double wiring of health checks
+	// 配置etcd storage
 	if err := etcdOptions.ApplyTo(&genericConfig); err != nil {
 		return nil, err
 	}
