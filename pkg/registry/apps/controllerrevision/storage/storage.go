@@ -47,6 +47,7 @@ func NewREST(optsGetter generic.RESTOptionsGetter) (*REST, error) {
 		TableConvertor: printerstorage.TableConvertor{TableGenerator: printers.NewTableGenerator().With(printersinternal.AddHandlers)},
 	}
 	options := &generic.StoreOptions{RESTOptions: optsGetter}
+	// options完善一下store， 包括etcd底层存储功能
 	if err := store.CompleteWithOptions(options); err != nil {
 		return nil, err
 	}

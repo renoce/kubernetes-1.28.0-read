@@ -267,6 +267,7 @@ func monitorGetter(factory serverstorage.StorageFactory) func() (monitors []metr
 	}
 }
 
+// StorageFactoryRestOptionsFactory实现了RESTOptionsGetter接口， 用于构建RESTOptions
 func (s *EtcdOptions) CreateRESTOptionsGetter(factory serverstorage.StorageFactory, resourceTransformers storagevalue.ResourceTransformers) generic.RESTOptionsGetter {
 	if resourceTransformers != nil {
 		factory = &transformerStorageFactory{
@@ -363,18 +364,19 @@ func (s *EtcdOptions) addEtcdHealthEndpoint(c *server.Config) error {
 	return nil
 }
 
+// 实现了RESTOptionsGetter接口， 用于api server构建RESTOptions
 type StorageFactoryRestOptionsFactory struct {
 	Options        EtcdOptions
 	StorageFactory serverstorage.StorageFactory
 }
 
+// 构建RESTOptions
 func (f *StorageFactoryRestOptionsFactory) GetRESTOptions(resource schema.GroupResource) (generic.RESTOptions, error) {
 	storageConfig, err := f.StorageFactory.NewConfig(resource)
 	if err != nil {
 		return generic.RESTOptions{}, fmt.Errorf("unable to find storage destination for %v, due to %v", resource, err.Error())
 	}
-	// RESTOptions.Decorator 默认存储使用generic.UndecoratedStorage构建，Kubernetes API Server通过
-	// generic.UndecoratedStorage函数直接创建etcd UnderlyingStorage底层存储对象
+	// RESTOptions.Decorator 默认无cacher storage， 通过generic.UndecoratedStorage函数直接创建etcd UnderlyingStorage底层存储对象
 	ret := generic.RESTOptions{
 		StorageConfig:             storageConfig,
 		Decorator:                 generic.UndecoratedStorage,
@@ -384,7 +386,7 @@ func (f *StorageFactoryRestOptionsFactory) GetRESTOptions(resource schema.GroupR
 		CountMetricPollPeriod:     f.Options.StorageConfig.CountMetricPollPeriod,
 		StorageObjectCountTracker: f.Options.StorageConfig.StorageObjectCountTracker,
 	}
-	// 如果enable watch cache功能，  RESTOptions.Decorator使用StorageWithCacher构建 cacher storage
+	// RESTOptions.Decorator 使用StorageWithCacher构建cacher storage， 如果enable watch cache功能的话
 	if f.Options.EnableWatchCache {
 		sizes, err := ParseWatchCacheSizes(f.Options.WatchCacheSizes)
 		if err != nil {

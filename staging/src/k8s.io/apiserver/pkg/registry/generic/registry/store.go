@@ -1479,7 +1479,9 @@ func (e *Store) CompleteWithOptions(options *generic.StoreOptions) error {
 	if err != nil {
 		return err
 	}
-
+	// 获取 RESTOptions结构，
+	// options.RESTOptions接口和options.RESTOptions.GetRESTOptions函数由StorageFactoryRestOptionsFactory结构体实现，
+	// 实现在vendor/k8s.io/apiserver/pkg/server/options/etcd.go
 	opts, err := options.RESTOptions.GetRESTOptions(e.DefaultQualifiedResource)
 	if err != nil {
 		return err
