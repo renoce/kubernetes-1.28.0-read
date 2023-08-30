@@ -373,7 +373,8 @@ func (f *StorageFactoryRestOptionsFactory) GetRESTOptions(resource schema.GroupR
 	if err != nil {
 		return generic.RESTOptions{}, fmt.Errorf("unable to find storage destination for %v, due to %v", resource, err.Error())
 	}
-
+	// RESTOptions.Decorator 默认存储使用generic.UndecoratedStorage构建，Kubernetes API Server通过
+	// generic.UndecoratedStorage函数直接创建etcd UnderlyingStorage底层存储对象
 	ret := generic.RESTOptions{
 		StorageConfig:             storageConfig,
 		Decorator:                 generic.UndecoratedStorage,
@@ -383,7 +384,7 @@ func (f *StorageFactoryRestOptionsFactory) GetRESTOptions(resource schema.GroupR
 		CountMetricPollPeriod:     f.Options.StorageConfig.CountMetricPollPeriod,
 		StorageObjectCountTracker: f.Options.StorageConfig.StorageObjectCountTracker,
 	}
-
+	// 如果enable watch cache功能，  RESTOptions.Decorator使用StorageWithCacher构建 cacher storage
 	if f.Options.EnableWatchCache {
 		sizes, err := ParseWatchCacheSizes(f.Options.WatchCacheSizes)
 		if err != nil {
@@ -398,6 +399,7 @@ func (f *StorageFactoryRestOptionsFactory) GetRESTOptions(resource schema.GroupR
 			ret.Decorator = generic.UndecoratedStorage
 		} else {
 			klog.V(3).InfoS("Using watch cache", "resource", resource)
+			// 构建chcher storage
 			ret.Decorator = genericregistry.StorageWithCacher()
 		}
 	}

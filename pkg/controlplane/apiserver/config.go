@@ -123,6 +123,7 @@ func BuildGenericConfig(
 	if lastErr != nil {
 		return
 	}
+	// 构建RESTOptionsGetter， 用于构建reststorage接口， 处理etcd存取
 	if lastErr = s.Etcd.ApplyWithStorageFactoryTo(storageFactory, genericConfig); lastErr != nil {
 		return
 	}

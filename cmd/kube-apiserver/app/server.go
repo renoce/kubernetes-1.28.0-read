@@ -214,7 +214,7 @@ func CreateKubeAPIServerConfig(opts options.CompletedOptions) (
 	error,
 ) {
 	proxyTransport := CreateProxyTransport()
-
+	// 构建genericConfig
 	genericConfig, versionedInformers, storageFactory, err := controlplaneapiserver.BuildGenericConfig(
 		opts.CompletedOptions,
 		[]*runtime.Scheme{legacyscheme.Scheme, extensionsapiserver.Scheme, aggregatorscheme.Scheme},

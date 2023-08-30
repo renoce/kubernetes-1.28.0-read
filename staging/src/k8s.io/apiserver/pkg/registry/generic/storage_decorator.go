@@ -38,6 +38,7 @@ type StorageDecorator func(
 
 // UndecoratedStorage returns the given a new storage from the given config
 // without any decoration.
+// 直接构建etcd UnderlyingStorage
 func UndecoratedStorage(
 	config *storagebackend.ConfigForResource,
 	resourcePrefix string,

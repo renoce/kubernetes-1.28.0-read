@@ -43,7 +43,7 @@ func StorageWithCacher() generic.StorageDecorator {
 		getAttrsFunc storage.AttrFunc,
 		triggerFuncs storage.IndexerFuncs,
 		indexers *cache.Indexers) (storage.Interface, factory.DestroyFunc, error) {
-
+		// 构建etcd 底层存储
 		s, d, err := generic.NewRawStorage(storageConfig, newFunc)
 		if err != nil {
 			return s, d, err
@@ -66,6 +66,7 @@ func StorageWithCacher() generic.StorageDecorator {
 			Indexers:       indexers,
 			Codec:          storageConfig.Codec,
 		}
+		// 构建缓存存储cacher， 并将etcd底层存储给到cacher的storage字段， 让cacher持有etcd底层存储
 		cacher, err := cacherstorage.NewCacherFromConfig(cacherConfig)
 		if err != nil {
 			return nil, func() {}, err
