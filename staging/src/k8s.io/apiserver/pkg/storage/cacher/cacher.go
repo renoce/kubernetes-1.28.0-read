@@ -895,6 +895,7 @@ func (c *Cacher) triggerValuesThreadUnsafe(event *watchCacheEvent) ([]string, bo
 	return result, true
 }
 
+// watchCache将接收到的事件通过w.onEvent函数回调给CacherStorage
 func (c *Cacher) processEvent(event *watchCacheEvent) {
 	if curLen := int64(len(c.incoming)); c.incomingHWM.Update(curLen) {
 		// Monitor if this gets backed up, and how much.
@@ -903,6 +904,7 @@ func (c *Cacher) processEvent(event *watchCacheEvent) {
 	c.incoming <- *event
 }
 
+// 监听watchCache的事件， 将事件分发给所有watcher
 func (c *Cacher) dispatchEvents() {
 	// Jitter to help level out any aggregate load.
 	bookmarkTimer := c.clock.NewTimer(wait.Jitter(time.Second, 0.25))
@@ -926,6 +928,7 @@ func (c *Cacher) dispatchEvents() {
 			// of a bookmark event or regular Add/Update/Delete operation by
 			// checking if resourceVersion here has changed.
 			if event.Type != watch.Bookmark {
+				// 分发
 				c.dispatchEvent(&event)
 			}
 			lastProcessedResourceVersion = event.ResourceVersion
@@ -1053,6 +1056,7 @@ func (c *Cacher) dispatchEvent(event *watchCacheEvent) {
 			// is running, not only the first ones in the list.
 			timer := c.timer
 			for _, watcher := range c.blockedWatchers {
+				// 通过channel发送
 				if !watcher.add(event, timer) {
 					// fired, clean the timer by set it to nil.
 					timer = nil

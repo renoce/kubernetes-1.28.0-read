@@ -136,6 +136,7 @@ func storeElementIndexers(indexers *cache.Indexers) cache.Indexers {
 //
 // watchCache is a "sliding window" (with a limited capacity) of objects
 // observed from a watch.
+// 实现了Store接口(vendor/k8s.io/client-go/tools/cache/store.go)
 type watchCache struct {
 	sync.RWMutex
 
@@ -329,11 +330,11 @@ func (w *watchCache) processEvent(event watch.Event, resourceVersion uint64, upd
 			wcEvent.PrevObjLabels = previousElem.Labels
 			wcEvent.PrevObjFields = previousElem.Fields
 		}
-
+		// watchCache通过w.updateCache存储至缓存滑动窗口
 		w.updateCache(wcEvent)
 		w.resourceVersion = resourceVersion
 		defer w.cond.Broadcast()
-
+		// watchCache通过updateFunc函数存储至cache.Store本地缓存中
 		return updateFunc(elem)
 	}(); err != nil {
 		return err
@@ -343,6 +344,8 @@ func (w *watchCache) processEvent(event watch.Event, resourceVersion uint64, upd
 	// This is safe as long as there is at most one call to Add/Update/Delete and
 	// UpdateResourceVersion in flight at any point in time, which is true now,
 	// because reflector calls them synchronously from its main thread.
+	// watchCache通过w.eventHandler函数， 将接收到的事件回调给Cacher
+	// eventHandler的实现在vendor/k8s.io/apiserver/pkg/storage/cacher/cacher.go中processEvent函数
 	if w.eventHandler != nil {
 		w.eventHandler(wcEvent)
 	}

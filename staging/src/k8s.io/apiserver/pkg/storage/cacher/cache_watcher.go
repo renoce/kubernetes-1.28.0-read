@@ -212,6 +212,7 @@ func (c *cacheWatcher) add(event *watchCacheEvent, timer *time.Timer) bool {
 	}
 
 	// OK, block sending, but only until timer fires.
+	// 发送event， cacheWatcher中process函数接收input event
 	select {
 	case c.input <- event:
 		return true
