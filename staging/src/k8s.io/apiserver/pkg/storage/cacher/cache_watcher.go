@@ -515,6 +515,8 @@ func (c *cacheWatcher) processInterval(ctx context.Context, cacheInterval *watch
 	c.process(ctx, resourceVersion)
 }
 
+// 用于监控c.input Channel中的数据。当其中没有数据时，监控c.input Channel时处于阻塞状态；
+// 当其中有数据时，数据会通过ResultChan函数对外暴露，只发送大于ResourceVersion资源版本号的数据
 func (c *cacheWatcher) process(ctx context.Context, resourceVersion uint64) {
 	// At this point we already start processing incoming watch events.
 	// However, the init event can still be processed because their serialization

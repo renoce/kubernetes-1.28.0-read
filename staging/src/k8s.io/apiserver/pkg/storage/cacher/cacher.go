@@ -585,6 +585,7 @@ func (c *Cacher) Watch(ctx context.Context, key string, opts storage.ListOptions
 	// given that memory allocation may trigger GC and block the thread.
 	// Also note that emptyFunc is a placeholder, until we will be able
 	// to compute watcher.forget function (which has to happen under lock).
+	// 实例化cacheWatcher
 	watcher := newCacheWatcher(
 		chanSize,
 		filterWithAttrsFunction(key, pred),
@@ -663,7 +664,7 @@ func (c *Cacher) Watch(ctx context.Context, key string, opts storage.ListOptions
 		// closing the watcher.
 		return newImmediateCloseWatcher(), nil
 	}
-
+	// 监控c.input Channel中的数据
 	go watcher.processInterval(ctx, cacheInterval, startWatchRV)
 	return watcher, nil
 }
