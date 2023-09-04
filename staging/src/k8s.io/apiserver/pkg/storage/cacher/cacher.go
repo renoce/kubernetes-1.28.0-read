@@ -405,6 +405,7 @@ func NewCacherFromConfig(config Config) (*Cacher, error) {
 		<-cacher.timer.C
 	}
 	progressRequester := newConditionalProgressRequester(config.Storage.RequestWatchProgress, config.Clock)
+	// 构建WatchCache监控 etcd中数据变化
 	watchCache := newWatchCache(
 		config.KeyFunc, cacher.processEvent, config.GetAttrsFunc, config.Versioner, config.Indexers, config.Clock, config.GroupResource, progressRequester)
 	listerWatcher := NewListerWatcher(config.Storage, config.ResourcePrefix, config.NewListFunc)
@@ -435,6 +436,7 @@ func NewCacherFromConfig(config Config) (*Cacher, error) {
 		wait.Until(
 			func() {
 				if !cacher.isStopped() {
+					// 启动reflector.ListAndWatch监控
 					cacher.startCaching(stopCh)
 				}
 			}, time.Second, stopCh,
@@ -444,6 +446,7 @@ func NewCacherFromConfig(config Config) (*Cacher, error) {
 	return cacher, nil
 }
 
+// 启动reflector.ListAndWatch监控
 func (c *Cacher) startCaching(stopChannel <-chan struct{}) {
 	// The 'usable' lock is always 'RLock'able when it is safe to use the cache.
 	// It is safe to use the cache after a successful list until a disconnection.
@@ -895,16 +898,17 @@ func (c *Cacher) triggerValuesThreadUnsafe(event *watchCacheEvent) ([]string, bo
 	return result, true
 }
 
-// watchCache将接收到的事件通过w.onEvent函数回调给CacherStorage
+// 回调函数， watchCache将接收到的事件通过processEvent函数回调给Cacher Storage
 func (c *Cacher) processEvent(event *watchCacheEvent) {
 	if curLen := int64(len(c.incoming)); c.incomingHWM.Update(curLen) {
 		// Monitor if this gets backed up, and how much.
 		klog.V(1).Infof("cacher (%v): %v objects queued in incoming channel.", c.groupResource.String(), curLen)
 	}
+	// 通过incoming channel传递给dispatchEvents函数
 	c.incoming <- *event
 }
 
-// 监听watchCache的事件， 将事件分发给所有watcher
+// 监听watchCache incoming的事件， 将事件分发给所有watcher
 func (c *Cacher) dispatchEvents() {
 	// Jitter to help level out any aggregate load.
 	bookmarkTimer := c.clock.NewTimer(wait.Jitter(time.Second, 0.25))
