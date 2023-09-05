@@ -693,7 +693,7 @@ func (c completedConfig) New(name string, delegationTarget DelegationTarget) (*G
 	if c.DebugSocketPath != "" {
 		debugSocket = routes.NewDebugSocket(c.DebugSocketPath)
 	}
-
+	// 将APIServerHandler添加到handlerChain
 	apiServerHandler := NewAPIServerHandler(name, c.Serializer, handlerChainBuilder, delegationTarget.UnprotectedHandler())
 
 	s := &GenericAPIServer{

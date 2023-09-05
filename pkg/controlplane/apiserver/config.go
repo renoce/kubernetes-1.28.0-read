@@ -66,7 +66,7 @@ func BuildGenericConfig(
 
 	lastErr error,
 ) {
-	// 构建genericConfig
+	// 构建genericConfig, 包括BuildHandlerChainFunc等
 	genericConfig = genericapiserver.NewConfig(legacyscheme.Codecs)
 	genericConfig.MergedResourceConfig = controlplane.DefaultAPIResourceConfigSource()
 

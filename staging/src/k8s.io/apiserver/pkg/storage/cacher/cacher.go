@@ -248,7 +248,7 @@ type indexedTriggerFunc struct {
 // Cacher implements storage.Interface (although most of the calls are just
 // delegated to the underlying storage).
 // CacherStorage ：带有缓存功能的资源存储对象
-// 其storage字段实现了storage.Interface通用存储接口（vendor/k8s.io/apiserver/pkg/storage/interfaces.go）
+// cacher和其字段storage字段都实现了storage.Interface通用存储接口（vendor/k8s.io/apiserver/pkg/storage/interfaces.go）
 // storage实现结构体在（vendor/k8s.io/apiserver/pkg/storage/etcd3/store.go） type store struct{}
 type Cacher struct {
 	// HighWaterMarks for performance debugging.
