@@ -405,12 +405,12 @@ func (c completedConfig) New(delegationTarget genericapiserver.DelegationTarget)
 		} else {
 			klog.Info(msg)
 		}
-	} else {
+	} else {	
 		routes.NewOpenIDMetadataServer(md.ConfigJSON, md.PublicKeysetJSON).
 			Install(s.Handler.GoRestfulContainer)
 	}
 	// 构建Master实例
-	m := &Instance{
+	m := &Instance{	
 		GenericAPIServer:          s,
 		ClusterAuthenticationInfo: c.ExtraConfig.ClusterAuthenticationInfo,
 	}

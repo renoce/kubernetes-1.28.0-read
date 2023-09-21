@@ -52,6 +52,7 @@ func (opts *ServerRunOptions) Complete() (CompletedOptions, error) {
 
 	// process opts.ServiceClusterIPRange from list to Primary and Secondary
 	// we process secondary only if provided by user
+	// 获取apiserver ip 和 主要的 service ip 范围
 	apiServerServiceIP, primaryServiceIPRange, secondaryServiceIPRange, err := getServiceIPAndRanges(opts.ServiceClusterIPRanges)
 	if err != nil {
 		return CompletedOptions{}, err
@@ -93,17 +94,28 @@ func (opts *ServerRunOptions) Complete() (CompletedOptions, error) {
 	}, nil
 }
 
+// CIDR 表示法（Classless Inter-Domain Routing notation）是一种用于表示IP地址块和子网掩码的标准记法。
+// IDR表示法使用斜线后跟一个数字来表示子网掩码位数，例如，`192.168.0.0/24`。在这个例子中，`192.168.0.0`是网络前缀，`/24`表示子网掩码为24位，即前24位是网络部分，后8位是主机部分。
+// 1. 将`192.168.0.0`转换为32位的二进制表示：`11000000.10101000.00000000.00000000`。
+// 2. 根据子网掩码的位数，确定网络部分和主机部分的范围。在这种情况下，前24位是网络部分，后8位是主机部分。
+// 3. 确定网络部分的最小和最大值。对于前24位固定的网络部分，最小值是`192.168.0.0`，最大值是`192.168.0.255`。
+// 4. 因此，`192.168.0.0/24`表示的IP范围是从`192.168.0.0`到`192.168.0.255`。
+
+// 参数：serviceClusterIPRanges， 格式：192.168.0.0/24，10.16.0.0/16
 func getServiceIPAndRanges(serviceClusterIPRanges string) (net.IP, net.IPNet, net.IPNet, error) {
 	serviceClusterIPRangeList := []string{}
 	if serviceClusterIPRanges != "" {
 		serviceClusterIPRangeList = strings.Split(serviceClusterIPRanges, ",")
 	}
-
+	// api server ip
 	var apiServerServiceIP net.IP
+	// 主要的service ip 范围
 	var primaryServiceIPRange net.IPNet
+	// 次要的service ip 范围
 	var secondaryServiceIPRange net.IPNet
 	var err error
 	// nothing provided by user, use default range (only applies to the Primary)
+	// 命令行没有提供集群ip地址范围， 使用默认的范围， 仅仅是提供主要的service ip范围
 	if len(serviceClusterIPRangeList) == 0 {
 		var primaryServiceClusterCIDR net.IPNet
 		primaryServiceIPRange, apiServerServiceIP, err = controlplane.ServiceIPRange(primaryServiceClusterCIDR)
@@ -112,12 +124,12 @@ func getServiceIPAndRanges(serviceClusterIPRanges string) (net.IP, net.IPNet, ne
 		}
 		return apiServerServiceIP, primaryServiceIPRange, net.IPNet{}, nil
 	}
-
+	// 得到主要service 集群的cidr
 	_, primaryServiceClusterCIDR, err := netutils.ParseCIDRSloppy(serviceClusterIPRangeList[0])
 	if err != nil {
 		return net.IP{}, net.IPNet{}, net.IPNet{}, fmt.Errorf("service-cluster-ip-range[0] is not a valid cidr")
 	}
-
+	// 得到主要的service range， api server ip
 	primaryServiceIPRange, apiServerServiceIP, err = controlplane.ServiceIPRange(*primaryServiceClusterCIDR)
 	if err != nil {
 		return net.IP{}, net.IPNet{}, net.IPNet{}, fmt.Errorf("error determining service IP ranges for primary service cidr: %v", err)
@@ -125,6 +137,7 @@ func getServiceIPAndRanges(serviceClusterIPRanges string) (net.IP, net.IPNet, ne
 
 	// user provided at least two entries
 	// note: validation asserts that the list is max of two dual stack entries
+	// ip range list len > 1 表示用户提供了两个地址段， 这里解析次要地址段
 	if len(serviceClusterIPRangeList) > 1 {
 		_, secondaryServiceClusterCIDR, err := netutils.ParseCIDRSloppy(serviceClusterIPRangeList[1])
 		if err != nil {

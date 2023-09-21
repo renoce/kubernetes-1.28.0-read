@@ -289,6 +289,7 @@ func (o *Options) Complete(alternateDNS []string, alternateIPs []net.IP) (Comple
 // Returns service ip range, api server service IP, and an error
 func ServiceIPRange(passedServiceClusterIPRange net.IPNet) (net.IPNet, net.IP, error) {
 	serviceClusterIPRange := passedServiceClusterIPRange
+	// 使用默认的service ip range
 	if passedServiceClusterIPRange.IP == nil {
 		klog.Warningf("No CIDR for service cluster IPs specified. Default value which was %s is deprecated and will be removed in future releases. Please specify it using --service-cluster-ip-range on kube-apiserver.", kubeoptions.DefaultServiceIPCIDR.String())
 		serviceClusterIPRange = kubeoptions.DefaultServiceIPCIDR

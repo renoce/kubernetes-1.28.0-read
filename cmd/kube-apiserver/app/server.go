@@ -76,6 +76,7 @@ func init() {
 
 // NewAPIServerCommand creates a *cobra.Command object with default parameters
 func NewAPIServerCommand() *cobra.Command {
+	//  默认server运行options
 	s := options.NewServerRunOptions()
 	cmd := &cobra.Command{
 		Use: "kube-apiserver",
@@ -126,7 +127,7 @@ cluster's shared state through which all other components interact.`,
 			return nil
 		},
 	}
-
+	// 将命令行参数和server 运行options关联， 命令行输入的参数将直接赋值给options各个子options， 比如： etcd等
 	fs := cmd.Flags()
 	namedFlagSets := s.Flags()
 	verflag.AddFlags(namedFlagSets.FlagSet("global"))
@@ -148,11 +149,12 @@ func Run(opts options.CompletedOptions, stopCh <-chan struct{}) error {
 	klog.Infof("Version: %+v", version.Get())
 
 	klog.InfoS("Golang settings", "GOGC", os.Getenv("GOGC"), "GOMAXPROCS", os.Getenv("GOMAXPROCS"), "GOTRACEBACK", os.Getenv("GOTRACEBACK"))
-
+	// 通过server run options来构建3种server的config
 	config, err := NewConfig(opts)
 	if err != nil {
 		return err
 	}
+	// 完善config， 得到completed config
 	completed, err := config.Complete()
 	if err != nil {
 		return err

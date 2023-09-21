@@ -54,6 +54,7 @@ func withAuthorization(handler http.Handler, a authorizer.Authorizer, s runtime.
 		klog.Warning("Authorization is disabled")
 		return handler
 	}
+	// http.HandlerFunc 是一个函数类型的变量， 这里是做类型转换， 将传入函数转为http.HandlerFunc类型， 这个类型实现了http.Handler接口， 实现了http.Handler接口的ServeHTTP函数
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		ctx := req.Context()
 		authorizationStart := time.Now()
