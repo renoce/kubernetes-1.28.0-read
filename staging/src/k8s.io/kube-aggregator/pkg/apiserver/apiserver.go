@@ -267,7 +267,7 @@ func (c completedConfig) NewWithDelegate(delegationTarget genericapiserver.Deleg
 	apisHandler := &apisHandler{
 		codecs:         aggregatorscheme.Codecs,
 		lister:         s.lister,
-		discoveryGroup: discoveryGroup(enabledVersions),
+		discoveryGroup: discoveryGroup(enabledVersions),	
 	}
 
 	if utilfeature.DefaultFeatureGate.Enabled(genericfeatures.AggregatedDiscoveryEndpoint) {

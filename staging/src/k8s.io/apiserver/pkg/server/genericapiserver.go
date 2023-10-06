@@ -726,7 +726,7 @@ func (s preparedGenericAPIServer) NonBlockingRun(stopCh <-chan struct{}, shutdow
 		<-stopCh
 		close(internalStopCh)
 	}()
-
+	// 在api server运行后， 启动所有的后置钩子函数
 	s.RunPostStartHooks(stopCh)
 
 	if _, err := systemd.SdNotify(true, "READY=1\n"); err != nil {
