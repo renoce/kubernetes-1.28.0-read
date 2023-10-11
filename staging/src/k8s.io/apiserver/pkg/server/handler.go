@@ -186,5 +186,6 @@ func serviceErrorHandler(s runtime.NegotiatedSerializer, serviceErr restful.Serv
 
 // ServeHTTP makes it an http.Handler
 func (a *APIServerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// 先遍历handler chain， 最后调用director的ServeHttp
 	a.FullHandlerChain.ServeHTTP(w, r)
 }

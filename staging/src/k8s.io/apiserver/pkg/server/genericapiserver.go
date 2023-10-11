@@ -575,7 +575,7 @@ func (s preparedGenericAPIServer) Run(stopCh <-chan struct{}) error {
 			return fmt.Errorf("failed to run the audit backend: %v", err)
 		}
 	}
-
+	// 启动http server
 	stoppedCh, listenerStoppedCh, err := s.NonBlockingRun(stopHttpServerCh, shutdownTimeout)
 	if err != nil {
 		return err
