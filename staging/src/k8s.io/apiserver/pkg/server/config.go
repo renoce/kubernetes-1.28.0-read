@@ -693,7 +693,7 @@ func (c completedConfig) New(name string, delegationTarget DelegationTarget) (*G
 	if c.DebugSocketPath != "" {
 		debugSocket = routes.NewDebugSocket(c.DebugSocketPath)
 	}
-	// 将APIServerHandler添加到handlerChain
+	// 将director handler添加到handlerChain， 作为handler chain的最后一环， 来处理请求， 并使用handlerchain 构建APIServerHandler， 作为GenericAPIServer的Handler
 	apiServerHandler := NewAPIServerHandler(name, c.Serializer, handlerChainBuilder, delegationTarget.UnprotectedHandler())
 
 	s := &GenericAPIServer{
