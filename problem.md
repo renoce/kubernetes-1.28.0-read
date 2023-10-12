@@ -99,3 +99,7 @@ master server 如果找不到对应的接口 服务， 当接口传给 extension
 
 
 2. RunPostStartHooks启动后置钩子函数， master， extension， aggregator的钩子函数都启动了吗， 在3个server中， 钩子函数都属于genericserver， 他们的使用顺序？
+
+
+
+3. aggregator， master， extension server3种 server的Handler如何调用具体的各个server的api的处理函数的， 各个handler和各个server的api处理函数怎么关联的？
